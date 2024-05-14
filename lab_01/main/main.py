@@ -1,2 +1,2 @@
-def sum(x, y):
-    return x + y
+def my_sum(*args):
+    pass
