@@ -17,5 +17,5 @@ def my_sum(*args):
 
 ### Usage
 
-1. Implement the `add` method in the `app.py` file.
+1. Implement the `my_sum` method in the `main.py` file.
 2. Run the Python script to test the implementation.
