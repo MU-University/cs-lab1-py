@@ -2,16 +2,16 @@
 
 ### Description
 
-This repository contains a simple Python app that requires the implementation of an `add` method. The `add` method is responsible for adding two numbers together.
+This repository contains a simple Python app that requires the implementation of an `my_sum` method. The `my_sum` method is responsible for calculating sum of numbers given as an argument.
 
 ### Task
 
-Implement the `add` method in the `app.py` file. The method should accept two parameters, `x` and `y`, and return their sum.
+Implement the `my_sum` method in the `main.py` file. The method should accept parameters and return their sum.
 
 ### Code Example
 
 ```python
-def add(x, y):
+def my_sum(*args):
     return pass
 ```
 
