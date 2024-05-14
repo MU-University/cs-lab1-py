@@ -1,4 +1,4 @@
-## Task: Implementing an Add Method
+## Task: Implementing an my_sum Method
 
 ### Description
 
