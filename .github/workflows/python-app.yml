@@ -25,7 +25,7 @@ jobs:
       - name: Clone tests folder from another repository
         env:
           REPO_URL: https://github.com/DemoAccount112/demo-template.git
-          FOLDER_PATH: tests
+          FOLDER_PATH: lab_01
         run: |
           git clone --depth 1 $REPO_URL temp-repo
           cp -r temp-repo/$FOLDER_PATH ./
@@ -43,7 +43,7 @@ jobs:
           pip install pytest
 
       - name: Test with pytest
-        run: pytest tests/lab_01/test/test_main.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+        run: pytest lab_01/test/test_main.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
 
       - name: Upload pytest test results
         uses: actions/upload-artifact@v4
