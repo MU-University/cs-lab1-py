@@ -10,9 +10,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10"]
 
     steps:
       - uses: actions/checkout@v4
@@ -24,53 +21,62 @@ jobs:
 
       - name: Clone tests folder from another repository
         env:
-          REPO_URL: https://github.com/DemoAccount112/demo-template.git
+          REPO_URL: https://github.com/eshonkulov-asliddin/demo-template.git
           FOLDER_PATH: lab_01
         run: |
           git clone --depth 1 $REPO_URL temp-repo
           cp -r temp-repo/$FOLDER_PATH ./
           rm -rf temp-repo
 
-      - name: Setup Python # Set Python version
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.9'  # Replace with desired Python version
 
-      # Install pip and pytest
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest
 
+      - name: Create directory for test results
+        run: mkdir -p junit
+
+      - name: Build stage
+        id: build
+        run: |
+          echo "Running build stage"
+          python lab_01/main/main.py build  # Replace with your actual build command
+
+      - name: Handle build failure
+        if: failure()
+        run: |
+          echo "Build stage failed"
+          echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > junit/test-results.xml
+          echo "<testsuites>" >> junit/test-results.xml
+          echo "<testsuite name=\"build\" tests=\"1\" failures=\"1\" errors=\"0\">" >> junit/test-results.xml
+          echo "<testcase classname=\"build\" name=\"build-stage\">" >> junit/test-results.xml
+          echo "<failure message=\"Build stage failed\"></failure>" >> junit/test-results.xml
+          echo "</testcase>" >> junit/test-results.xml
+          echo "</testsuite>" >> junit/test-results.xml
+          echo "</testsuites>" >> junit/test-results.xml
+
       - name: Test with pytest
-        run: pytest lab_01/test/test_main.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+        if: success()
+        run: pytest lab_01/test/test_main.py --doctest-modules --tb=short --junitxml=junit/test-results.xml
 
       - name: Upload pytest test results
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-results-${{ matrix.python-version }}
-          path: junit/test-results-${{ matrix.python-version }}.xml
-        # Use always() to always run this step to publish test results when there are test failures
+          name: pytest-results
+          path: junit/test-results.xml
         if: ${{ always() }}
 
       - name: Surface failing tests
         if: always()
         uses: pmeier/pytest-results-action@main
         with:
-          # A list of JUnit XML files, directories containing the former, and wildcard
-          # patterns to process.
-          # See @actions/glob for supported patterns.
-          path: junit/test-results-${{ matrix.python-version }}.xml
-      
-          # (Optional) Add a summary of the results at the top of the report
+          path: junit/test-results.xml
           summary: true
-      
-          # (Optional) Select which results should be included in the report.
-          # Follows the same syntax as `pytest -r`
           display-options: fEX
-      
-          # (Optional) Fail the workflow if no JUnit XML was found.
           fail-on-empty: true
-      
-          # (Optional) Title of the test results section in the workflow summary
           title: Test results
