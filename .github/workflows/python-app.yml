@@ -62,7 +62,7 @@ jobs:
 
       - name: Test with pytest
         if: success()
-        run: pytest lab_01/test/test_main.py --doctest-modules --tb=short --junitxml=junit/test-results.xml
+        run: pytest lab_01/test/test.py --doctest-modules --tb=short --junitxml=junit/test-results.xml
 
       - name: Upload pytest test results
         uses: actions/upload-artifact@v4
