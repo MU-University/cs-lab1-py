@@ -28,7 +28,7 @@ jobs:
           # Verify the structure and copy the required files
           ls temp-repo  # List files to debug if the expected structure is correct
           mkdir -p tests
-          cp -r temp-repo/tests/* tests/
+          cp -r temp-repo/test/* test/
           rm -rf temp-repo
 
       - name: Set up Python
