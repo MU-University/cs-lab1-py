@@ -47,7 +47,7 @@ jobs:
       - name: Run main Python script
         run: |
           echo "Running main script"
-          python lab_01/main/main.py  # Adjust if there are specific arguments needed
+          python main/main.py  # Adjust if there are specific arguments needed
 
       - name: Test with pytest
         run: |
