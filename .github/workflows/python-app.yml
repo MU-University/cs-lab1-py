@@ -21,11 +21,10 @@ jobs:
 
       - name: Clone tests folder from another repository
         env:
-          REPO_URL: https://github.com/eshonkulov-asliddin/demo-template.git
-          FOLDER_PATH: lab_01
+          REPO_URL: https://github.com/eshonkulov-asliddin/demo-template-test.git
         run: |
           git clone --depth 1 $REPO_URL temp-repo
-          cp -r temp-repo/$FOLDER_PATH ./
+          cp -r temp-repo/ ./
           rm -rf temp-repo
 
       - name: Set up Python
@@ -45,7 +44,7 @@ jobs:
         id: build
         run: |
           echo "Running build stage"
-          python lab_01/main/main.py build  # Replace with your actual build command
+          python test/test.py build 
 
       - name: Handle build failure
         if: failure()

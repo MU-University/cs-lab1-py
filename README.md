@@ -13,7 +13,7 @@ Implement the `my_sum` method in the `main.py` file. The method should accept pa
 ```python
 def my_sum(*args):
      pass
-```
+``` 
 
 ### Usage
 
