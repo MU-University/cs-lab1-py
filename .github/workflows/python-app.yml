@@ -13,6 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        name: Checkout Code
 
       - name: Set up Git
         run: |
@@ -22,9 +23,11 @@ jobs:
       - name: Clone tests folder from another repository
         env:
           REPO_URL: https://github.com/eshonkulov-asliddin/demo-template-test.git
+          FOLDER_PATH: tests
         run: |
           git clone --depth 1 $REPO_URL temp-repo
-          cp -r temp-repo/ ./
+          mkdir -p tests
+          cp -r temp-repo/$FOLDER_PATH/* tests/
           rm -rf temp-repo
 
       - name: Set up Python
@@ -40,28 +43,15 @@ jobs:
       - name: Create directory for test results
         run: mkdir -p junit
 
-      - name: Build stage
-        id: build
+      - name: Run main Python script
         run: |
-          echo "Running build stage"
-          python test/test.py build 
-
-      - name: Handle build failure
-        if: failure()
-        run: |
-          echo "Build stage failed"
-          echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > junit/test-results.xml
-          echo "<testsuites>" >> junit/test-results.xml
-          echo "<testsuite name=\"build\" tests=\"1\" failures=\"1\" errors=\"0\">" >> junit/test-results.xml
-          echo "<testcase classname=\"build\" name=\"build-stage\">" >> junit/test-results.xml
-          echo "<failure message=\"Build stage failed\"></failure>" >> junit/test-results.xml
-          echo "</testcase>" >> junit/test-results.xml
-          echo "</testsuite>" >> junit/test-results.xml
-          echo "</testsuites>" >> junit/test-results.xml
+          echo "Running main script"
+          python lab_01/main/main.py  # Adjust if there are specific arguments needed
 
       - name: Test with pytest
-        if: success()
-        run: pytest lab_01/test/test.py --doctest-modules --tb=short --junitxml=junit/test-results.xml
+        run: |
+          echo "Running tests"
+          pytest tests/test.py --doctest-modules --tb=short --junitxml=junit/test-results.xml
 
       - name: Upload pytest test results
         uses: actions/upload-artifact@v4
