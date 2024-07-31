@@ -20,20 +20,21 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Clone tests folder from another repository
+      - name: Clone tests repository
         env:
           REPO_URL: https://github.com/eshonkulov-asliddin/demo-template-test.git
-          FOLDER_PATH: tests
         run: |
           git clone --depth 1 $REPO_URL temp-repo
+          # Verify the structure and copy the required files
+          ls temp-repo  # List files to debug if the expected structure is correct
           mkdir -p tests
-          cp -r temp-repo/$FOLDER_PATH/* tests/
+          cp -r temp-repo/tests/* tests/
           rm -rf temp-repo
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'  # Replace with desired Python version
+          python-version: '3.9'
 
       - name: Install dependencies
         run: |
