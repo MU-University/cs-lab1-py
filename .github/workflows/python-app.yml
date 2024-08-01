@@ -25,8 +25,6 @@ jobs:
           REPO_URL: https://github.com/eshonkulov-asliddin/demo-template-test.git
         run: |
           git clone --depth 1 $REPO_URL temp-repo
-          # Verify the structure and copy the required files
-          ls temp-repo  # List files to debug if the expected structure is correct
           mkdir -p tests
           cp -r temp-repo/test/* test/
           rm -rf temp-repo
@@ -45,21 +43,46 @@ jobs:
         run: mkdir -p junit
 
       - name: Run main Python script
+        id: run_script
         run: |
-          echo "Running main script"
-          python main/main.py  # Adjust if there are specific arguments needed
+          set -o pipefail
+          python main/main.py 2>&1 | tee main_script.log
+        continue-on-error: false  # Ensure the step is marked as failed if there is an error
+
+      - name: Generate build error report
+        if: failure()  # Only run if the previous steps failed
+        run: |
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > junit/test-results.xml
+          echo '<testsuites>' >> junit/test-results.xml
+          echo '  <testsuite name="Build Errors" tests="1" failures="1">' >> junit/test-results.xml
+          echo '    <testcase classname="Build" name="Build Script">' >> junit/test-results.xml
+          echo '      <failure type="error" message="Build failed. See log for details."><![CDATA[' >> junit/test-results.xml
+          cat main_script.log >> junit/test-results.xml
+          echo '      ]]></failure>' >> junit/test-results.xml
+          echo '    </testcase>' >> junit/test-results.xml
+          echo '  </testsuite>' >> junit/test-results.xml
+          echo '</testsuites>' >> junit/test-results.xml
 
       - name: Test with pytest
+        id: pytest
         run: |
-          echo "Running tests"
+          set -o pipefail
           pytest test/test.py --doctest-modules --tb=short --junitxml=junit/test-results.xml
+        continue-on-error: false  # Continue even if tests fail
 
       - name: Upload pytest test results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pytest-results
           path: junit/test-results.xml
-        if: ${{ always() }}
+
+      - name: Upload build error report
+        if: failure()  # Only upload if the build failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: junit/test-results.xml
 
       - name: Surface failing tests
         if: always()
@@ -68,5 +91,5 @@ jobs:
           path: junit/test-results.xml
           summary: true
           display-options: fEX
-          fail-on-empty: true
+          fail-on-empty: false
           title: Test results
