@@ -13,7 +13,7 @@ jobs:
     steps:
     - name: Notify completion
       run: |
-        curl -X POST https://your-notification-endpoint.com \
+        curl -X POST https://eshonkulov-asliddin.jprq.app/workflow/results \
           -H "Content-Type: application/json" \
           -d '{
             "status": "completed",
