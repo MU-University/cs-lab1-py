@@ -1,0 +1,28 @@
+name: Notify Completion
+
+on:
+  workflow_run:
+    workflows: ["Build and Test Python Project"]
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Notify completion
+      run: |
+        curl -X POST https://your-notification-endpoint.com \
+          -H "Content-Type: application/json" \
+          -d '{
+            "status": "completed",
+            "repository": {
+              "name": "${{ github.repository }}",
+              "owner": "${{ github.repository_owner }}"
+            },
+            "branch": "${{ github.ref_name }}",
+            "commit": "${{ github.sha }}",
+            "runId": "${{ github.event.workflow_run.id }}",
+            "runNumber": "${{ github.event.workflow_run.run_number }}"
+          }'
