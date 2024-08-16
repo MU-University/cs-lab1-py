@@ -22,7 +22,7 @@ jobs:
 
       - name: Clone tests repository
         env:
-          REPO_URL: https://github.com/eshonkulov-asliddin/demo-template-test.git
+          REPO_URL: https://github.com/MU-University/cs-lab1-py-test.git
         run: |
           git clone --depth 1 $REPO_URL temp-repo
           mkdir -p tests
